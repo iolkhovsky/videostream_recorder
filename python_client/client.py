@@ -30,7 +30,7 @@ def run_client(args):
         io_buf = io.BytesIO(frame)
         io_buf.seek(0)
         base64str = base64.b64encode(io_buf.read()).decode("utf-8")
-        payload = json.dumps({"request_id": i, "encoded_img": base64str})
+        payload = json.dumps({"RequestId": i, "EncodedImg": base64str})
         resp = requests.put(url, data=payload, headers=headers, timeout=8000)
         print("Server's response:", resp)
         time.sleep(frame_period)

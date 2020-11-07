@@ -1,17 +1,27 @@
 package main
 
 import (
+	"fmt"
 	"gocv.io/x/gocv"
+	"videostream_recorder/internal/pkg/webserver"
 )
 
 func main() {
-	webcam, _ := gocv.VideoCaptureDevice(0)
-	window := gocv.NewWindow("Hello")
-	img := gocv.NewMat()
+	var WebServer webserver.RecorderHttpServer
+	frameChan := make(chan gocv.Mat, 10)
+	WebServer.Init(frameChan)
+	WebServer.Start(8000)
 
+	ok := true
 	for {
-		webcam.Read(&img)
-		window.IMShow(img)
-		window.WaitKey(1)
+		select {
+			case img:= <- frameChan:
+				fmt.Print("Got new image")
+				gocv.IMWrite("gocv.jpg", img)
+				ok = true
+			default:
+				ok = false
+		}
 	}
+	fmt.Print("Ok: ", ok)
 }

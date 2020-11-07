@@ -18,12 +18,12 @@ def base64str_to_img(base64str):
 
 
 class Item(BaseModel):
-    request_id: int
-    encoded_img: str
+    RequestId: int
+    EncodedImg: str
 
 
 @app.put("/frame")
 async def handle_frame(imgdata: Item):
-    img = base64str_to_img(imgdata.encoded_img)
+    img = base64str_to_img(imgdata.EncodedImg)
     cv2.imwrite("Received.jpg", img)
-    return {"encoded_img_size": len(imgdata.encoded_img)}
+    return {"encoded_img_size": len(imgdata.EncodedImg)}
