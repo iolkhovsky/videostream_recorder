@@ -16,6 +16,7 @@ func main() {
 	WebServer.Start(8000)
 	Recorder.Init(frameChan)
 	Recorder.Start()
+	defer Recorder.Stop()
 
 	for true {
 		time.Sleep(5 * time.Second)

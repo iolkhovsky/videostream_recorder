@@ -8,11 +8,13 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
+	"os"
 )
 
 const PutFrameUrl = "/frame"
 const NotValidUrlMessage = "404 not found."
 const PutMethodName = "PUT"
+const DefaultLogPath = "webserver.log"
 
 type IRecorderHttpServer interface {
 	Init(SyncChan chan gocv.Mat)
@@ -28,6 +30,8 @@ type RequestData struct {
 type RecorderHttpServer struct {
 	port int
 	frameChan chan gocv.Mat
+	logpath string
+	logfile *os.File
 	ok bool
 }
 
@@ -75,7 +79,14 @@ func (self *RecorderHttpServer) RequestHandler(w http.ResponseWriter, r *http.Re
 
 func (self *RecorderHttpServer) Init(SyncChan chan gocv.Mat) {
 	self.frameChan = SyncChan
+	self.logpath = DefaultLogPath
 	http.HandleFunc("/", self.RequestHandler)
+	var err error
+	self.logfile, err = os.OpenFile(self.logpath, os.O_RDWR | os.O_CREATE | os.O_APPEND, 0666)
+	if err != nil {
+		fmt.Print("Can't create log file")
+	}
+	log.SetOutput(self.logfile)
 }
 
 func (self *RecorderHttpServer) Start(Port int) {

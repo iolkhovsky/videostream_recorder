@@ -1,6 +1,7 @@
 package videorecorder
 
 import (
+	"fmt"
 	"gocv.io/x/gocv"
 	"log"
 	"os"
@@ -16,6 +17,7 @@ const DefaultFps = 25.0
 const DefaultFragmentLength = 10.0
 const DefaultRepository = "recorder_video"
 const DefaultMaxFragmentsCnt = 10
+const DefaultLogPath = "videorecorder.log"
 
 type IVideoRecorder interface {
 	Init(SyncChan chan gocv.Mat)
@@ -44,6 +46,8 @@ type VideoRecorder struct {
 	currentFragmentId int
 	maxFragmentsCnt int
 	toSave string
+	logpath string
+	logfile *os.File
 }
 
 func (self *VideoRecorder) Init(SyncChan chan gocv.Mat) {
@@ -58,6 +62,14 @@ func (self *VideoRecorder) Init(SyncChan chan gocv.Mat) {
 	self.recordingInProcess = false
 	self.recordsList = make([]string, 0, 0)
 	self.SetRepo(DefaultRepository)
+
+	self.logpath = DefaultLogPath
+	var err error
+	self.logfile, err = os.OpenFile(self.logpath, os.O_RDWR | os.O_CREATE | os.O_APPEND, 0666)
+	if err != nil {
+		fmt.Print("Can't create log file")
+	}
+	log.SetOutput(self.logfile)
 }
 
 func (self *VideoRecorder) SetRepo(RepoPath string) {
