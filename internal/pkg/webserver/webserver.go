@@ -57,7 +57,6 @@ func (self *RecorderHttpServer) RequestHandler(w http.ResponseWriter, r *http.Re
 		json.Unmarshal([]byte(rawBodyText), &requestData)
 
 		img, err := DecodeImageFromString(requestData.EncodedImg)
-		//gocv.IMWrite("goframe.jpg", img)
 
 		select {
 			case self.frameChan <- img: {
