@@ -23,17 +23,18 @@ def run_client(args):
     port = str(args.port)
     url = f"http://{ip}:{port}/frame"
     frame_period = 1. / (args.fps if args.fps else 1.)
-    content_type = 'image/jpeg'
-    headers = {'content-type': content_type}
+    headers = {'content-type': 'image/jpeg'}
+    i = 0
     while True:
         frame = camera(color_format="bgr", data_format="encoded")
         io_buf = io.BytesIO(frame)
         io_buf.seek(0)
         base64str = base64.b64encode(io_buf.read()).decode("utf-8")
-        payload = json.dumps({"encoded_img": base64str})
+        payload = json.dumps({"request_id": i, "encoded_img": base64str})
         resp = requests.put(url, data=payload, headers=headers, timeout=8000)
         print("Server's response:", resp)
         time.sleep(frame_period)
+        i += 1
 
 
 if __name__ == "__main__":

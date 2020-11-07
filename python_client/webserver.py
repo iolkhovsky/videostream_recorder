@@ -18,6 +18,7 @@ def base64str_to_img(base64str):
 
 
 class Item(BaseModel):
+    request_id: int
     encoded_img: str
 
 
